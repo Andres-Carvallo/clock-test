@@ -105,7 +105,7 @@ const ClockScreen: React.FC = () => {
                     setIsModaVisible(false);
                   }}
                 >
-                  <Text>{item}</Text>
+                  <Text style={styles.textList}>{item}</Text>
                 </Pressable>
               )
             }}
@@ -114,7 +114,7 @@ const ClockScreen: React.FC = () => {
             style={{marginTop: 20}}
             onPress={() => setIsModaVisible(false)}
           >
-            <Text>Close</Text>
+            <Text style={styles.textList}>Close</Text>
           </Pressable>
         </View>
       </Modal>
@@ -156,5 +156,9 @@ const styles = StyleSheet.create({
   clockMeridiem: {
     marginRight: 10,
     fontWeight: "bold",
+  },
+  textList: {
+    marginBottom: 10,
+    fontSize: 25
   }
 });
