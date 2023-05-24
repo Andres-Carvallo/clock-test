@@ -12,6 +12,7 @@ const ClockScreen: React.FC = () => {
   const [timeZones, setTimeZones] = useState<string[]>([]);
   const [selectedTimeZone, setSelectedTimeZone] = useState<string>("America/Santiago");
   const [isModalVisible, setIsModaVisible] = useState<boolean>(false);
+  const [meridiem, setMeridiem] = useState<string>("")
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>();
 
   useEffect(() => {
@@ -22,11 +23,16 @@ const ClockScreen: React.FC = () => {
   }, [])
   
   useEffect(() => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
     getTimeData(selectedTimeZone).then((time: Date) => {
-      console.log(time);
-      setHours(time.getHours());
-      setMinutes(time.getMinutes());
-      setSeconds(time.getSeconds());
+      const timeZoneStringNow = time.toLocaleTimeString('en-US', { timeZone: selectedTimeZone });
+      const timeStringArray = timeZoneStringNow.split(":")
+      setMeridiem(timeStringArray[2].split(" ")[1])
+      setHours(+timeStringArray[0]);
+      setMinutes(+timeStringArray[1]);
+      setSeconds(+timeStringArray[2].split(" ")[0]);
       const intervalId = setInterval(() => {
         setSeconds((seconds) => {
           let secs;
@@ -63,25 +69,25 @@ const ClockScreen: React.FC = () => {
     }
     return time.toString();
   }
-
   return (
     <View>
-      <Text style={{marginBottom: 10}}>
+      <Text style={styles.titleText}>
         Clock-App
+      </Text>
+      <Text style={styles.titleText}>
+        {`Current Time Zone: ${selectedTimeZone}`}
       </Text>
       <Button
         onPress={() => setIsModaVisible(true)}
         title="Choose your Zone Time"
         color="#841584"
-        accessibilityLabel="Learn more about this purple button"
+        accessibilityLabel="Time Zone Button"
       />
-      <Text style={{marginBottom: 30, marginTop: 10}}>
-        Current Time:
-      </Text>
       <View style={styles.clockContainer}>
         <TimeContainer time={formatTime(hours)} isSeconds={false}/>
         <TimeContainer time={formatTime(minutes)} isSeconds={false} />
         <TimeContainer time={formatTime(seconds)} isSeconds={true} />
+        <Text style={styles.clockMeridiem}>{meridiem}</Text>
       </View>
       <Modal
         visible={isModalVisible}
@@ -95,7 +101,6 @@ const ClockScreen: React.FC = () => {
               return (
                 <Pressable
                   onPress={() => {
-                    clearInterval(intervalId);
                     setSelectedTimeZone(item);
                     setIsModaVisible(false);
                   }}
@@ -106,6 +111,7 @@ const ClockScreen: React.FC = () => {
             }}
           />
           <Pressable
+            style={{marginTop: 20}}
             onPress={() => setIsModaVisible(false)}
           >
             <Text>Close</Text>
@@ -119,6 +125,10 @@ const ClockScreen: React.FC = () => {
 export default ClockScreen;
 
 const styles = StyleSheet.create({
+  titleText: {
+    marginBottom: 10,
+    fontSize: 20,
+  },
   titleContainer: {
     display: "flex",
     flexDirection: "row",
@@ -133,6 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 10,
   },
   modalContainer: {
     marginTop: 100,
@@ -142,4 +153,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  clockMeridiem: {
+    marginRight: 10,
+    fontWeight: "bold",
+  }
 });
