@@ -1,9 +1,9 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { Text, StyleSheet, View } from "react-native";
 
 interface Props {
   time: string,
-  isSeconds: Boolean,
+  isSeconds: boolean,
 }
 
 const TimeContainer: React.FC<Props> = ({time, isSeconds}) => {
@@ -12,7 +12,7 @@ const TimeContainer: React.FC<Props> = ({time, isSeconds}) => {
       <Text style={styles.textContainer}>{time}</Text>
       {
         !isSeconds &&
-        <Text style={{fontSize: 20, marginLeft: 40}}>:</Text>
+        <Text style={styles.dots}>:</Text>
       }
     </View>
   )
@@ -24,13 +24,19 @@ const styles = StyleSheet.create({
   timeWrapper: {
     display: "flex",
     flexDirection: "row",
-    padding: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
     alignItems: "center",
   },
   textContainer: {
-    width: 40,
     display: "flex",
     justifyContent: "center",
+    width: 40,
     fontSize: 30,
+  },
+  dots: {
+    fontSize: 20,
+    marginLeft: 20,
+    marginRight: 20,
   }
 });

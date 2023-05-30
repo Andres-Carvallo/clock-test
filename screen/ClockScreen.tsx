@@ -3,6 +3,7 @@ import React, { useEffect, useState, } from "react";
 import { getTimeData,  getTimeZones } from "../services/index";
 
 import TimeContainer from "../components/TimeContainter";
+import ModalSelector from "../components/ModalSelector";
 
 const ClockScreen: React.FC = () => {
 
@@ -45,10 +46,15 @@ const ClockScreen: React.FC = () => {
               }
               if (seconds === 59 && minutes === 59 ) {
                 setHours((hours) => {
-                  if (hours < 23) {
+                  if (hours < 11) {
                     return hours + 1;
                   }
-                   return 0;
+                  if (meridiem.toLocaleLowerCase() === 'am') {
+                    setMeridiem("PM")
+                  } else {
+                    setMeridiem("AM")
+                  }
+                  return 0;
                 })
                 return 0;
               }
@@ -69,6 +75,9 @@ const ClockScreen: React.FC = () => {
     }
     return time.toString();
   }
+
+  const timeArray = [hours, minutes, seconds]
+
   return (
     <View>
       <Text style={styles.titleText}>
@@ -84,40 +93,22 @@ const ClockScreen: React.FC = () => {
         accessibilityLabel="Time Zone Button"
       />
       <View style={styles.clockContainer}>
-        <TimeContainer time={formatTime(hours)} isSeconds={false}/>
-        <TimeContainer time={formatTime(minutes)} isSeconds={false} />
-        <TimeContainer time={formatTime(seconds)} isSeconds={true} />
+        {
+          timeArray.map((time, index) => {
+            return <TimeContainer time={formatTime(time)} isSeconds={index !== 2 ? false : true}/>
+          })
+        }
         <Text style={styles.clockMeridiem}>{meridiem}</Text>
       </View>
-      <Modal
-        visible={isModalVisible}
-        animationType="fade"
-      >
-        <View style={styles.modalContainer}>
-          <FlatList
-            data={timeZones}
-            keyExtractor={item => item}
-            renderItem={({item}) => {
-              return (
-                <Pressable
-                  onPress={() => {
-                    setSelectedTimeZone(item);
-                    setIsModaVisible(false);
-                  }}
-                >
-                  <Text style={styles.textList}>{item}</Text>
-                </Pressable>
-              )
-            }}
-          />
-          <Pressable
-            style={{marginTop: 20}}
-            onPress={() => setIsModaVisible(false)}
-          >
-            <Text style={styles.textList}>Close</Text>
-          </Pressable>
-        </View>
-      </Modal>
+      <ModalSelector
+        isModalVisible={isModalVisible}
+        timeZones={timeZones}
+        setTimeZone={(item: string) => {
+          setSelectedTimeZone(item);
+          setIsModaVisible(false);
+        }}
+        closeModal={() => setIsModaVisible(false)}
+      />
     </View>
   )
 }
@@ -144,6 +135,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
+    paddingRight: 20,
+    paddingLeft: 20
   },
   modalContainer: {
     marginTop: 100,
@@ -154,11 +147,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   clockMeridiem: {
-    marginRight: 10,
+    marginLeft: 20,
     fontWeight: "bold",
   },
   textList: {
     marginBottom: 10,
     fontSize: 25
-  }
+  },
 });
