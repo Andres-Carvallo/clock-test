@@ -95,7 +95,7 @@ const ClockScreen: React.FC = () => {
       <View style={styles.clockContainer}>
         {
           timeArray.map((time, index) => {
-            return <TimeContainer time={formatTime(time)} isSeconds={index !== 2 ? false : true}/>
+            return <TimeContainer time={formatTime(time)} isSeconds={index !== 2 ? false : true} key={index} />
           })
         }
         <Text style={styles.clockMeridiem}>{meridiem}</Text>
