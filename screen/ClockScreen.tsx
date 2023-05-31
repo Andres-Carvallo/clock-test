@@ -46,15 +46,20 @@ const ClockScreen: React.FC = () => {
               }
               if (seconds === 59 && minutes === 59 ) {
                 setHours((hours) => {
+                  if (hours === 12) {
+                    return 1
+                  } else {
+                    if (meridiem.toLocaleLowerCase() === 'am' && hours === 11) {
+                      setMeridiem("PM")
+                    } 
+                    if (meridiem.toLocaleLowerCase() === 'pm' && hours === 11) {
+                      setMeridiem("AM")
+                    } 
+                  }
                   if (hours < 11) {
                     return hours + 1;
                   }
-                  if (meridiem.toLocaleLowerCase() === 'am') {
-                    setMeridiem("PM")
-                  } else {
-                    setMeridiem("AM")
-                  }
-                  return 0;
+                  return 12;
                 })
                 return 0;
               }
